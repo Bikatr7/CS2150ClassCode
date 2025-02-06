@@ -47,28 +47,22 @@ def show_problem2_steps() -> None:
     Show the step-by-step solution for proving [¬p ∧ (p ∨ q)] → q is a tautology
     """
     print("Problem 2: Show [¬p ∧ (p ∨ q)] → q is a tautology\n")
-    print("Solution:")
-    steps = [
-        ("[¬p ∧ (p ∨ q)] → q", "Original expression"),
-        ("≡ ¬[¬p ∧ (p ∨ q)] ∨ q", "Implication Equivalence"),
-        ("≡ ¬(¬p) ∨ ¬(p ∨ q) ∨ q", "De Morgan's Law"),
-        ("≡ p ∨ (¬p ∧ ¬q) ∨ q", "De Morgan's Law"),
-        ("≡ (p ∨ ¬q) ∨ q", "Absorption/Distribution: p ∨ (¬p ∧ ¬q) ≡ p ∨ ¬q"),
-        ("≡ p ∨ (¬q ∨ q)", "Associativity"),
-        ("≡ p ∨ T", "Since ¬q ∨ q is a tautology"),
-        ("≡ T", "Since p ∨ T is always true")
-    ]
-    
-    for step, explanation in steps:
-        print(f"{step:<40} ({explanation})")
-    
-    print("\nThus, the original conditional is a tautology.")
     
     def expr(p: bool, q: bool) -> bool:
-        return (not p and (p or q)) <= q
+        not_p = not p
+        p_or_q = p or q
+        left_side = not_p and p_or_q
+        result = left_side <= q
+        print(f"{int(p)} | {int(q)} | {int(not_p)} | {int(p_or_q)} | {int(left_side)} | {int(result)}")
+        return result
     
-    print("\nVerification using truth table:")
-    print_truth_table(expr, lambda p, q: True, ["p", "q"])
+    print("p | q | ¬p | p∨q | ¬p∧(p∨q) | Result")
+    print("-" * 35)
+    
+    values = list(product([True, False], repeat=2))
+    is_tautology = all(expr(*vals) for vals in values)
+    
+    print(f"\nConclusion: The expression is{' ' if is_tautology else ' not '}a tautology")
 
 def check_biconditional_equivalence() -> None:
     """
@@ -115,6 +109,8 @@ def negate_inequality_statement(statement: str) -> None:
     print("Problem 6: Express negations without using negation symbol\n")
     
     def negate_bounds(lower: float, upper: float, strict: bool = True) -> str:
+        ## For strict inequalities (-2 < x < 3), use ≤,≥ in negation
+        ## For non-strict inequalities (-4 ≤ x ≤ 1), use <,> in negation
         if(strict):
             return f"x ≤ {lower} or x ≥ {upper}"
         else:
@@ -122,12 +118,12 @@ def negate_inequality_statement(statement: str) -> None:
     
     statements = {
         "∀x (-2 < x < 3)": (-2, 3, True),
-        "∃x (-4 ≤ x ≤ 1)": (-4, 1, False)
+        "∃x (-4 ≤ x ≤ 1)": (-4, 1, False)  # Note: non-strict inequalities
     }
     
     for stmt, (lower, upper, strict) in statements.items():
         print(f"Original: {stmt}")
-        if(stmt.startswith("∀")):
+        if stmt.startswith("∀"):
             print(f"Negation: ∃x ({negate_bounds(lower, upper, strict)})")
         else:
             print(f"Negation: ∀x ({negate_bounds(lower, upper, not strict)})")
@@ -250,7 +246,10 @@ def verify_logical_equivalences() -> None:
     
     print("\nConclusions:")
     for name, is_equiv in results.items():
-        print(f"{name}: {'Valid' if is_equiv else 'Invalid'} equivalence")
+        if(not is_equiv):
+            print(f"{name}: Invalid equivalence")
+            break
+        print(f"{name}: Valid equivalence")
 
 def print_final_answers():
     """
@@ -320,7 +319,10 @@ def print_final_answers():
             invalid_equiv = name
             break
     print("4. Which is not a valid propositional equivalence?")
-    print(f"   The {invalid_equiv} equivalence is invalid\n")
+    if(invalid_equiv):
+        print(f"   The {invalid_equiv} equivalence is invalid")
+    else:
+        print("   All equivalences are valid")
     
     ## Problem 5
     domain = [1, 2, 3]
