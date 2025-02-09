@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Callable, List, Tuple, Dict
+from typing import Callable, List
 
 def print_truth_table(expression1: Callable, expression2: Callable, vars: List[str]) -> bool:
     """
